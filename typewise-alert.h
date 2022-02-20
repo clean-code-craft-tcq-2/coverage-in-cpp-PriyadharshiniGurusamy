@@ -1,32 +1,20 @@
 #pragma once
+#include "typewise-alertTypes.h"
 
-typedef enum {
-  PASSIVE_COOLING,
-  HI_ACTIVE_COOLING,
-  MED_ACTIVE_COOLING
-} CoolingType;
+/*Member functions*/
 
-typedef enum {
-  NORMAL,
-  TOO_LOW,
-  TOO_HIGH
-} BreachType;
+void initializeTemperatureLimits();
+void initializeAlertType();
 
-BreachType inferBreach(double value, double lowerLimit, double upperLimit);
-BreachType classifyTemperatureBreach(CoolingType coolingType, double temperatureInC);
-
-typedef enum {
-  TO_CONTROLLER,
-  TO_EMAIL
-} AlertTarget;
-
-typedef struct {
-  CoolingType coolingType;
-  char brand[48];
-} BatteryCharacter;
+BreachType inferBreach(double value, TempBoundary tempBoundary);
+void sendAlert(BreachType breachType, AlertTarget alertTarget);
 
 void checkAndAlert(
   AlertTarget alertTarget, BatteryCharacter batteryChar, double temperatureInC);
 
 void sendToController(BreachType breachType);
 void sendToEmail(BreachType breachType);
+
+/*Member variables*/
+TempLimitMap _tempLimitMap;
+AlertTargetMap _alertTargetMap;
