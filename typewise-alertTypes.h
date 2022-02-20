@@ -25,5 +25,5 @@ typedef struct {
 
 /* Lower limit, Upper Limit*/
 typedef std::pair< double,double > TempBoundary;
-typedef map< CoolingType,TempBoundary > TempLimitMap;
-typedef map< AlertTarget ,void (*)(BreachType) > AlertTargetMap;
+typedef std::map< CoolingType,TempBoundary > TempLimitMap;
+typedef std::map< AlertTarget ,void (*)(BreachType) > AlertTargetMap;
