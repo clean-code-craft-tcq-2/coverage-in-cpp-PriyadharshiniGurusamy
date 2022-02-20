@@ -1,60 +1,66 @@
 #include "typewise-alert.h"
 #include <stdio.h>
 
-BreachType inferBreach(double value, double lowerLimit, double upperLimit) {
-  if(value < lowerLimit) {
-    return TOO_LOW;
-  }
-  if(value > upperLimit) {
-    return TOO_HIGH;
-  }
-  return NORMAL;
+void initializeTemperatureLimits()
+{
+    _tempLimitMap.insert(make_pair(PASSIVE_COOLING,make_pair(0,35)));
+    _tempLimitMap.insert(make_pair(HI_ACTIVE_COOLING,make_pair(0,45)));
+    _tempLimitMap.insert(make_pair(MED_ACTIVE_COOLING,make_pair(0,40)));
 }
 
-BreachType classifyTemperatureBreach(
-    CoolingType coolingType, double temperatureInC) {
-  int lowerLimit = 0;
-  int upperLimit = 0;
-  switch(coolingType) {
-    case PASSIVE_COOLING:
-      lowerLimit = 0;
-      upperLimit = 35;
-      break;
-    case HI_ACTIVE_COOLING:
-      lowerLimit = 0;
-      upperLimit = 45;
-      break;
-    case MED_ACTIVE_COOLING:
-      lowerLimit = 0;
-      upperLimit = 40;
-      break;
-  }
-  return inferBreach(temperatureInC, lowerLimit, upperLimit);
+void initializeAlertType()
+{
+    _alertTargetMap.insert(make_pair(TO_CONTROLLER, &sendToController));
+    _alertTargetMap.insert(make_pair(TO_EMAIL, &sendToEmail));
 }
 
-void checkAndAlert(
-    AlertTarget alertTarget, BatteryCharacter batteryChar, double temperatureInC) {
-
-  BreachType breachType = classifyTemperatureBreach(
-    batteryChar.coolingType, temperatureInC
-  );
-
-  switch(alertTarget) {
-    case TO_CONTROLLER:
-      sendToController(breachType);
-      break;
-    case TO_EMAIL:
-      sendToEmail(breachType);
-      break;
-  }
+template <typename T, typename U>
+U getValuefromKey(map<T,U> x, T y)
+{
+    U value;
+    typename map<T,U>::iterator itr = x.find(y);
+    if(itr != x.end() )
+    {
+        value = itr->second;
+    }
+    return value;
 }
 
-void sendToController(BreachType breachType) {
+BreachType inferBreach(double value, TempBoundary tempBoundary) 
+{
+  initializeTemperatureLimits();
+  initializeAlertType();
+  BreachType retBreachType = NORMAL;
+  if(value < tempBoundary.first) {
+    retBreachType = TOO_LOW;
+  }
+  else if(value > tempBoundary.seccond) {
+    retBreachType = TOO_HIGH;
+  }
+  return retBreachType;
+}
+
+void checkAndAlert(AlertTarget alertTarget, BatteryCharacter batteryChar, double temperatureInC) 
+{ 
+  initializeTemperatureLimits();
+  initializeAlertType();
+  BreachType breachType = inferBreach(temperatureInC , getValuefromKey(_tempLimitMap,batteryChar.coolingType));
+  sendAlert(breachType,alertTarget);
+}
+
+void sendAlert(BreachType breachType, AlertTarget alertTarget)
+{
+  getValuefromKey(_alertType, alertTarget)(breachType);
+}
+
+void sendToController(BreachType breachType) 
+{
   const unsigned short header = 0xfeed;
   printf("%x : %x\n", header, breachType);
 }
 
-void sendToEmail(BreachType breachType) {
+void sendToEmail(BreachType breachType) 
+{
   const char* recepient = "a.b@c.com";
   switch(breachType) {
     case TOO_LOW:
