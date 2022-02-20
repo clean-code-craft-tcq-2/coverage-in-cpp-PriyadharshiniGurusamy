@@ -2,7 +2,8 @@
 
 #include "test/catch.hpp"
 #include "typewise-alert.h"
+#include "typewise-alertTypes.h"
 
 TEST_CASE("infers the breach according to limits") {
-  REQUIRE(inferBreach(12, 20, 30) == TOO_LOW);
+  REQUIRE(inferBreach(12, std::make_pair(20, 30)) == TOO_LOW);
 }
