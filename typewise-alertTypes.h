@@ -1,3 +1,5 @@
+#ifndef ALERT_TYPES_H
+#define ALERT_TYPES_H
 #include <map>
 #include <utility>
 
@@ -27,3 +29,5 @@ typedef struct {
 typedef std::pair< double,double > TempBoundary;
 typedef std::map< CoolingType,TempBoundary > TempLimitMap;
 typedef std::map< AlertTarget ,void (*)(BreachType) > AlertTargetMap;
+
+#endif
