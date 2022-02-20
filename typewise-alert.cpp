@@ -3,22 +3,22 @@
 
 void initializeTemperatureLimits()
 {
-    _tempLimitMap.insert(make_pair(PASSIVE_COOLING,make_pair(0,35)));
-    _tempLimitMap.insert(make_pair(HI_ACTIVE_COOLING,make_pair(0,45)));
-    _tempLimitMap.insert(make_pair(MED_ACTIVE_COOLING,make_pair(0,40)));
+    _tempLimitMap.insert(std::make_pair(PASSIVE_COOLING,std::make_pair(0,35)));
+    _tempLimitMap.insert(std::make_pair(HI_ACTIVE_COOLING,std::make_pair(0,45)));
+    _tempLimitMap.insert(std::make_pair(MED_ACTIVE_COOLING,std::make_pair(0,40)));
 }
 
 void initializeAlertType()
 {
-    _alertTargetMap.insert(make_pair(TO_CONTROLLER, &sendToController));
-    _alertTargetMap.insert(make_pair(TO_EMAIL, &sendToEmail));
+    _alertTargetMap.insert(std::make_pair(TO_CONTROLLER, &sendToController));
+    _alertTargetMap.insert(std::make_pair(TO_EMAIL, &sendToEmail));
 }
 
 template <typename T, typename U>
-U getValuefromKey(map<T,U> x, T y)
+U getValuefromKey(std::map<T,U> x, T y)
 {
     U value;
-    typename map<T,U>::iterator itr = x.find(y);
+    typename std::map<T,U>::iterator itr = x.find(y);
     if(itr != x.end() )
     {
         value = itr->second;
@@ -34,7 +34,7 @@ BreachType inferBreach(double value, TempBoundary tempBoundary)
   if(value < tempBoundary.first) {
     retBreachType = TOO_LOW;
   }
-  else if(value > tempBoundary.seccond) {
+  else if(value > tempBoundary.second) {
     retBreachType = TOO_HIGH;
   }
   return retBreachType;
@@ -50,7 +50,7 @@ void checkAndAlert(AlertTarget alertTarget, BatteryCharacter batteryChar, double
 
 void sendAlert(BreachType breachType, AlertTarget alertTarget)
 {
-  getValuefromKey(_alertType, alertTarget)(breachType);
+  getValuefromKey(_alertTargetMap, alertTarget)(breachType);
 }
 
 void sendToController(BreachType breachType) 
