@@ -1,4 +1,7 @@
 #pragma once
+#ifndef TYPEWISE_ALERT_H
+#define TYPEWISE_ALERT_H
+
 #include "typewise-alertTypes.h"
 
 /*Member functions*/
@@ -18,3 +21,5 @@ void sendToEmail(BreachType breachType);
 /*Member variables*/
 TempLimitMap _tempLimitMap;
 AlertTargetMap _alertTargetMap;
+
+#endif
