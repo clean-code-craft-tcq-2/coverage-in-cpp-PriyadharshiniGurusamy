@@ -4,6 +4,20 @@
 
 #include "typewise-alertTypes.h"
 
+
+template <typename T, typename U>
+bool getValuefromKey(std::map<T,U> x, T y , U* z)
+{
+    bool retVal = false;
+    typename std::map<T,U>::iterator itr = x.find(y);
+    if(itr != x.end() )
+    {
+        *z = itr->second;
+        retVal = true;
+    }
+    return retVal;
+}
+
 class TemperatureAlert
 {
 public:
