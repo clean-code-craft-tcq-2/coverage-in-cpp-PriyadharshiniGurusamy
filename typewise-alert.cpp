@@ -1,14 +1,21 @@
 #include "typewise-alert.h"
 #include <stdio.h>
 
-void initializeTemperatureLimits()
+void TemperatureAlert::TemperatureAlert()
+{
+    
+  initializeTemperatureLimits();
+  initializeAlertType();
+}
+
+void TemperatureAlert::initializeTemperatureLimits()
 {
     _tempLimitMap.insert(std::make_pair(PASSIVE_COOLING,std::make_pair(0,35)));
     _tempLimitMap.insert(std::make_pair(HI_ACTIVE_COOLING,std::make_pair(0,45)));
     _tempLimitMap.insert(std::make_pair(MED_ACTIVE_COOLING,std::make_pair(0,40)));
 }
 
-void initializeAlertType()
+void TemperatureAlert::initializeAlertType()
 {
     _alertTargetMap.insert(std::make_pair(TO_CONTROLLER, &sendToController));
     _alertTargetMap.insert(std::make_pair(TO_EMAIL, &sendToEmail));
@@ -26,10 +33,8 @@ U getValuefromKey(std::map<T,U> x, T y)
     return value;
 }
 
-BreachType inferBreach(double value, TempBoundary tempBoundary) 
+BreachType TemperatureAlert::inferBreach(double value, TempBoundary tempBoundary) 
 {
-  initializeTemperatureLimits();
-  initializeAlertType();
   BreachType retBreachType = NORMAL;
   if(value < tempBoundary.first) {
     retBreachType = TOO_LOW;
@@ -40,15 +45,13 @@ BreachType inferBreach(double value, TempBoundary tempBoundary)
   return retBreachType;
 }
 
-void checkAndAlert(AlertTarget alertTarget, BatteryCharacter batteryChar, double temperatureInC) 
+void TemperatureAlert::checkAndAlert(AlertTarget alertTarget, BatteryCharacter batteryChar, double temperatureInC) 
 { 
-  initializeTemperatureLimits();
-  initializeAlertType();
   BreachType breachType = inferBreach(temperatureInC , getValuefromKey(_tempLimitMap,batteryChar.coolingType));
   sendAlert(breachType,alertTarget);
 }
 
-void sendAlert(BreachType breachType, AlertTarget alertTarget)
+void TemperatureAlert::sendAlert(BreachType breachType, AlertTarget alertTarget)
 {
   getValuefromKey(_alertTargetMap, alertTarget)(breachType);
 }
@@ -59,7 +62,7 @@ void sendToController(BreachType breachType)
   printf("%x : %x\n", header, breachType);
 }
 
-void sendToEmail(BreachType breachType) 
+void TemperatureAlert::sendToEmail(BreachType breachType) 
 {
   const char* recepient = "a.b@c.com";
   switch(breachType) {
