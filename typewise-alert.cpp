@@ -52,7 +52,7 @@ void TemperatureAlert::checkAndAlert(AlertTarget alertTarget, BatteryCharacter b
 
 void TemperatureAlert::sendAlert(BreachType breachType, AlertTarget alertTarget)
 {
-  getValuefromKey(_alertTargetMap, alertTarget)(breachType);
+  (this->*getValuefromKey(_alertTargetMap, alertTarget))(breachType);
 }
 
 void sendToController(BreachType breachType) 
