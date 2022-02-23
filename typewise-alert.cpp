@@ -64,10 +64,10 @@ void TemperatureAlert::checkAndAlert(AlertTarget alertTarget, BatteryCharacter b
 
 void TemperatureAlert::sendAlert(BreachType breachType, AlertTarget alertTarget)
 {
-  void TemperatureAlert::* alertFunction;
-  if(getValuefromKey(_alertTargetMap, alertTarget, alertFunction))
+  void (TemperatureAlert::* alertFunction)(BreachType);
+  if(getValuefromKey(_alertTargetMap, alertTarget, &alertFunction))
   {
-     (this->*getValuefromKey(_alertTargetMap, alertTarget))(breachType);
+     (this->*alertFunction)(breachType);
   }
 }
 
@@ -80,14 +80,14 @@ void TemperatureAlert::sendToController(BreachType breachType)
 void TemperatureAlert::sendToEmail(BreachType breachType) 
 {
   const char* recepient = "a.b@c.com";
-  const char* message = "";
-  if( getValuefromKey(_alertMessageMap, breachType, message))
+  std::string message;
+  if( getValuefromKey(_alertMessageMap, breachType, &message))
   {
      printAlert(recepient , message);
   }
 }
 
-void TemperatureAlert::printAlert(const char* recepient , const char* message)
+void TemperatureAlert::printAlert(const char* recepient , std::string message)
 {
      printf("To: %s\n", recepient);
      printf("%s\n", message);
