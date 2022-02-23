@@ -5,6 +5,7 @@ TemperatureAlert::TemperatureAlert()
 {    
   initializeTemperatureLimits();
   initializeAlertType();
+  initializeAlertMessage();
 }
 
 void TemperatureAlert::initializeTemperatureLimits()
