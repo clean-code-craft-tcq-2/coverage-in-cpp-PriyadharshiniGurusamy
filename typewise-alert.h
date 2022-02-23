@@ -23,7 +23,7 @@ public:
    
    void sendToController(BreachType breachType);
    void sendToEmail(BreachType breachType);
-   void printAlert(const char* recepient , const char* message);
+   void printAlert(const char* recepient , std::string message);
    
    /*Member variables*/
    TempLimitMap _tempLimitMap;
