@@ -26,6 +26,7 @@ public:
    /*Member variables*/
    TempLimitMap _tempLimitMap;
    AlertTargetMap _alertTargetMap;
+   AlertMessageMap _alertMessageMap;
 };
 
 #endif
