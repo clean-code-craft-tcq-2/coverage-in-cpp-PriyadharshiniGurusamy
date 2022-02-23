@@ -31,5 +31,6 @@ typedef struct {
 typedef std::pair< double,double > TempBoundary;
 typedef std::map< CoolingType,TempBoundary > TempLimitMap;
 typedef std::map< AlertTarget ,void (TemperatureAlert::*)(BreachType) > AlertTargetMap;
+typedef std::map< BreachType,const char* > AlertMessageMap;
 
 #endif
