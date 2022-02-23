@@ -13,6 +13,7 @@ public:
    
    void initializeTemperatureLimits();
    void initializeAlertType();
+   void initializeAlertMessage();
    
    BreachType inferBreach(double value, TempBoundary tempBoundary);
    void sendAlert(BreachType breachType, AlertTarget alertTarget);
@@ -22,6 +23,7 @@ public:
    
    void sendToController(BreachType breachType);
    void sendToEmail(BreachType breachType);
+   void printAlert(const char* recepient , const char* message);
    
    /*Member variables*/
    TempLimitMap _tempLimitMap;
