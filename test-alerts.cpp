@@ -11,14 +11,48 @@ TEST_CASE("infers the breach according to limits") {
   REQUIRE(obj.inferBreach(25, std::make_pair(20, 30)) == NORMAL);
 }
 
-TEST_CASE("checks initialization") {
+TEST_CASE("checks Alert to Email") {
   TemperatureAlert obj;
   TempBoundary tempBoundary;
   BatteryCharacter batteryCharacter;
   batteryCharacter.coolingType = PASSIVE_COOLING;
   obj.checkAndAlert(TO_EMAIL, batteryCharacter, 12);
+  obj.checkAndAlert(TO_EMAIL, batteryCharacter, 40);
   CHECK(getValuefromKey(obj._tempLimitMap, batteryCharacter.coolingType, &tempBoundary));
-  CHECK(getValuefromKey(obj._tempLimitMap, HI_ACTIVE_COOLING, &tempBoundary));
-  CHECK(getValuefromKey(obj._tempLimitMap, MED_ACTIVE_COOLING, &tempBoundary));
-  CHECK_FALSE(getValuefromKey(obj._tempLimitMap, static_cast<CoolingType>(4), &tempBoundary));
+  
+  batteryCharacter.coolingType = HI_ACTIVE_COOLING;
+  obj.checkAndAlert(TO_EMAIL, batteryCharacter, 12);
+  obj.checkAndAlert(TO_EMAIL, batteryCharacter, 50);
+  CHECK(getValuefromKey(obj._tempLimitMap, batteryCharacter.coolingType, &tempBoundary));
+  
+  batteryCharacter.coolingType = MED_ACTIVE_COOLING;
+  obj.checkAndAlert(TO_EMAIL, batteryCharacter, 12);
+  obj.checkAndAlert(TO_EMAIL, batteryCharacter, 50);  
+  CHECK(getValuefromKey(obj._tempLimitMap, batteryCharacter.coolingType, &tempBoundary));
+  
+  batteryCharacter.coolingType = static_cast<CoolingType>(4);
+  obj.checkAndAlert(TO_EMAIL, batteryCharacter, 12);
+  obj.checkAndAlert(TO_EMAIL, batteryCharacter, 50);
+  CHECK_FALSE(getValuefromKey(obj._tempLimitMap, batteryCharacter.coolingType, &tempBoundary));
+}
+
+TEST_CASE("checks Alert to controller") {
+  TemperatureAlert obj;
+  TempBoundary tempBoundary;
+  BatteryCharacter batteryCharacter;
+  batteryCharacter.coolingType = PASSIVE_COOLING;  
+  obj.checkAndAlert(TO_CONTROLLER, batteryCharacter, 12);
+  obj.checkAndAlert(TO_CONTROLLER, batteryCharacter, 40);
+  
+  batteryCharacter.coolingType = HI_ACTIVE_COOLING;
+  obj.checkAndAlert(TO_CONTROLLER, batteryCharacter, 12);
+  obj.checkAndAlert(TO_CONTROLLER, batteryCharacter, 50);
+  
+  batteryCharacter.coolingType = MED_ACTIVE_COOLING;
+  obj.checkAndAlert(TO_CONTROLLER, batteryCharacter, 12);
+  obj.checkAndAlert(TO_CONTROLLER, batteryCharacter, 50);
+  
+  batteryCharacter.coolingType = static_cast<CoolingType>(4);
+  obj.checkAndAlert(TO_CONTROLLER, batteryCharacter, 12);
+  obj.checkAndAlert(TO_CONTROLLER, batteryCharacter, 50);
 }
