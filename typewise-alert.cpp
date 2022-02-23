@@ -28,19 +28,6 @@ void TemperatureAlert::initializeAlertMessage()
     _alertMessageMap.insert(std::make_pair(TOO_HIGH, "Hi, the temperature is normal"));
 }
 
-template <typename T, typename U>
-bool getValuefromKey(std::map<T,U> x, T y , U* z)
-{
-    bool retVal = false;
-    typename std::map<T,U>::iterator itr = x.find(y);
-    if(itr != x.end() )
-    {
-        *z = itr->second;
-        retVal = true;
-    }
-    return retVal;
-}
-
 BreachType TemperatureAlert::inferBreach(double value, TempBoundary tempBoundary) 
 {
   BreachType retBreachType = NORMAL;
