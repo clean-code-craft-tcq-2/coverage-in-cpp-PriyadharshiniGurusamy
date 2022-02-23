@@ -1,32 +1,48 @@
 #pragma once
+#ifndef TYPEWISE_ALERT_H
+#define TYPEWISE_ALERT_H
 
-typedef enum {
-  PASSIVE_COOLING,
-  HI_ACTIVE_COOLING,
-  MED_ACTIVE_COOLING
-} CoolingType;
+#include "typewise-alertTypes.h"
 
-typedef enum {
-  NORMAL,
-  TOO_LOW,
-  TOO_HIGH
-} BreachType;
 
-BreachType inferBreach(double value, double lowerLimit, double upperLimit);
-BreachType classifyTemperatureBreach(CoolingType coolingType, double temperatureInC);
+template <typename T, typename U>
+bool getValuefromKey(std::map<T,U> x, T y , U* z)
+{
+    bool retVal = false;
+    typename std::map<T,U>::iterator itr = x.find(y);
+    if(itr != x.end() )
+    {
+        *z = itr->second;
+        retVal = true;
+    }
+    return retVal;
+}
 
-typedef enum {
-  TO_CONTROLLER,
-  TO_EMAIL
-} AlertTarget;
+class TemperatureAlert
+{
+public:
+   TemperatureAlert();
+   ~TemperatureAlert() {}
+   /*Member functions*/
+   
+   void initializeTemperatureLimits();
+   void initializeAlertType();
+   void initializeAlertMessage();
+   
+   BreachType inferBreach(double value, TempBoundary tempBoundary);
+   void sendAlert(BreachType breachType, AlertTarget alertTarget);
+   
+   void checkAndAlert(
+     AlertTarget alertTarget, BatteryCharacter batteryChar, double temperatureInC);
+   
+   void sendToController(BreachType breachType);
+   void sendToEmail(BreachType breachType);
+   void printAlert(const char* recepient , std::string message);
+   
+   /*Member variables*/
+   TempLimitMap _tempLimitMap;
+   AlertTargetMap _alertTargetMap;
+   AlertMessageMap _alertMessageMap;
+};
 
-typedef struct {
-  CoolingType coolingType;
-  char brand[48];
-} BatteryCharacter;
-
-void checkAndAlert(
-  AlertTarget alertTarget, BatteryCharacter batteryChar, double temperatureInC);
-
-void sendToController(BreachType breachType);
-void sendToEmail(BreachType breachType);
+#endif

@@ -1,71 +1,82 @@
 #include "typewise-alert.h"
 #include <stdio.h>
 
-BreachType inferBreach(double value, double lowerLimit, double upperLimit) {
-  if(value < lowerLimit) {
-    return TOO_LOW;
-  }
-  if(value > upperLimit) {
-    return TOO_HIGH;
-  }
-  return NORMAL;
+TemperatureAlert::TemperatureAlert()
+{    
+  initializeTemperatureLimits();
+  initializeAlertType();
+  initializeAlertMessage();
 }
 
-BreachType classifyTemperatureBreach(
-    CoolingType coolingType, double temperatureInC) {
-  int lowerLimit = 0;
-  int upperLimit = 0;
-  switch(coolingType) {
-    case PASSIVE_COOLING:
-      lowerLimit = 0;
-      upperLimit = 35;
-      break;
-    case HI_ACTIVE_COOLING:
-      lowerLimit = 0;
-      upperLimit = 45;
-      break;
-    case MED_ACTIVE_COOLING:
-      lowerLimit = 0;
-      upperLimit = 40;
-      break;
-  }
-  return inferBreach(temperatureInC, lowerLimit, upperLimit);
+void TemperatureAlert::initializeTemperatureLimits()
+{
+    _tempLimitMap.insert(std::make_pair(PASSIVE_COOLING,std::make_pair(0,35)));
+    _tempLimitMap.insert(std::make_pair(HI_ACTIVE_COOLING,std::make_pair(0,45)));
+    _tempLimitMap.insert(std::make_pair(MED_ACTIVE_COOLING,std::make_pair(0,40)));
 }
 
-void checkAndAlert(
-    AlertTarget alertTarget, BatteryCharacter batteryChar, double temperatureInC) {
+void TemperatureAlert::initializeAlertType()
+{
+    _alertTargetMap.insert(std::make_pair(TO_CONTROLLER, &TemperatureAlert::sendToController));
+    _alertTargetMap.insert(std::make_pair(TO_EMAIL, &TemperatureAlert::sendToEmail));
+}
 
-  BreachType breachType = classifyTemperatureBreach(
-    batteryChar.coolingType, temperatureInC
-  );
+void TemperatureAlert::initializeAlertMessage()
+{
+    _alertMessageMap.insert(std::make_pair(TOO_LOW, "Hi, the temperature is too low"));
+    _alertMessageMap.insert(std::make_pair(TOO_HIGH, "Hi, the temperature is too high"));
+    _alertMessageMap.insert(std::make_pair(TOO_HIGH, "Hi, the temperature is normal"));
+}
 
-  switch(alertTarget) {
-    case TO_CONTROLLER:
-      sendToController(breachType);
-      break;
-    case TO_EMAIL:
-      sendToEmail(breachType);
-      break;
+BreachType TemperatureAlert::inferBreach(double value, TempBoundary tempBoundary) 
+{
+  BreachType retBreachType = NORMAL;
+  if(value < tempBoundary.first) {
+    retBreachType = TOO_LOW;
+  }
+  else if(value > tempBoundary.second) {
+    retBreachType = TOO_HIGH;
+  }
+  return retBreachType;
+}
+
+void TemperatureAlert::checkAndAlert(AlertTarget alertTarget, BatteryCharacter batteryChar, double temperatureInC) 
+{ 
+  TempBoundary tempBoundary;
+  if ( getValuefromKey(_tempLimitMap, batteryChar.coolingType, &tempBoundary))
+  {
+     BreachType breachType = inferBreach(temperatureInC , tempBoundary);
+     sendAlert(breachType,alertTarget);
   }
 }
 
-void sendToController(BreachType breachType) {
+void TemperatureAlert::sendAlert(BreachType breachType, AlertTarget alertTarget)
+{
+  void (TemperatureAlert::* alertFunction)(BreachType);
+  if(getValuefromKey(_alertTargetMap, alertTarget, &alertFunction))
+  {
+     (this->*alertFunction)(breachType);
+  }
+}
+
+void TemperatureAlert::sendToController(BreachType breachType) 
+{
   const unsigned short header = 0xfeed;
   printf("%x : %x\n", header, breachType);
 }
 
-void sendToEmail(BreachType breachType) {
+void TemperatureAlert::sendToEmail(BreachType breachType) 
+{
   const char* recepient = "a.b@c.com";
-  switch(breachType) {
-    case TOO_LOW:
-      printf("To: %s\n", recepient);
-      printf("Hi, the temperature is too low\n");
-      break;
-    case TOO_HIGH:
-      printf("To: %s\n", recepient);
-      printf("Hi, the temperature is too high\n");
-      break;
-    case NORMAL:
-      break;
+  std::string message;
+  if( getValuefromKey(_alertMessageMap, breachType, &message))
+  {
+     printAlert(recepient , message);
   }
+}
+
+void TemperatureAlert::printAlert(const char* recepient , std::string message)
+{
+     printf("To: %s\n", recepient);
+     printf("%s\n", message);
 }
