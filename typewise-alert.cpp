@@ -1,9 +1,8 @@
 #include "typewise-alert.h"
 #include <stdio.h>
 
-void TemperatureAlert::TemperatureAlert()
-{
-    
+TemperatureAlert::TemperatureAlert()
+{    
   initializeTemperatureLimits();
   initializeAlertType();
 }
@@ -17,8 +16,8 @@ void TemperatureAlert::initializeTemperatureLimits()
 
 void TemperatureAlert::initializeAlertType()
 {
-    _alertTargetMap.insert(std::make_pair(TO_CONTROLLER, &sendToController));
-    _alertTargetMap.insert(std::make_pair(TO_EMAIL, &sendToEmail));
+    _alertTargetMap.insert(std::make_pair(TO_CONTROLLER, &TemperatureAlert::sendToController));
+    _alertTargetMap.insert(std::make_pair(TO_EMAIL, &TemperatureAlert::sendToEmail));
 }
 
 template <typename T, typename U>
