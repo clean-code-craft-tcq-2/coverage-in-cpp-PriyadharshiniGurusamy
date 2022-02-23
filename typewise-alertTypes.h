@@ -3,6 +3,8 @@
 #include <map>
 #include <utility>
 
+class TemperatureAlert;
+
 typedef enum {
   PASSIVE_COOLING,
   HI_ACTIVE_COOLING,
@@ -28,6 +30,6 @@ typedef struct {
 /* Lower limit, Upper Limit*/
 typedef std::pair< double,double > TempBoundary;
 typedef std::map< CoolingType,TempBoundary > TempLimitMap;
-typedef std::map< AlertTarget ,void (*)(BreachType) > AlertTargetMap;
+typedef std::map< AlertTarget ,void (TemperatureAlert::*)(BreachType) > AlertTargetMap;
 
 #endif
