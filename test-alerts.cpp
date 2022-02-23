@@ -14,7 +14,10 @@ TEST_CASE("infers the breach according to limits") {
 TEST_CASE("checks initialization") {
   TemperatureAlert obj;
   TempBoundary tempBoundary;
-  CHECK(getValuefromKey(obj._tempLimitMap, PASSIVE_COOLING, &tempBoundary));
+  BatteryCharacter batteryCharacter;
+  batteryCharacter.coolingType = PASSIVE_COOLING;
+  obj.checkAndAlert(TO_EMAIL, batteryCharacter, 12);
+  CHECK(getValuefromKey(obj._tempLimitMap, batteryCharacter.coolingType, &tempBoundary));
   CHECK(getValuefromKey(obj._tempLimitMap, HI_ACTIVE_COOLING, &tempBoundary));
   CHECK(getValuefromKey(obj._tempLimitMap, MED_ACTIVE_COOLING, &tempBoundary));
   CHECK_FALSE(getValuefromKey(obj._tempLimitMap, static_cast<CoolingType>(4), &tempBoundary));
