@@ -17,5 +17,5 @@ TEST_CASE("checks initialization") {
   CHECK(getValuefromKey(obj._tempLimitMap, PASSIVE_COOLING, &tempBoundary));
   CHECK(getValuefromKey(obj._tempLimitMap, HI_ACTIVE_COOLING, &tempBoundary));
   CHECK(getValuefromKey(obj._tempLimitMap, MED_ACTIVE_COOLING, &tempBoundary));
-  CHECK_FALSE(getValuefromKey(obj._tempLimitMap, 4, &tempBoundary));
+  CHECK_FALSE(getValuefromKey(obj._tempLimitMap, static_cast<CoolingType>(4), &tempBoundary));
 }
